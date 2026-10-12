@@ -23,20 +23,13 @@ Diseñar e implementar una aplicación web que permita:
 | Nombre | Rol Scrum |
 | :--- | :--- |
 | Jose Naranjo | Product Owner |
-| Anaela Pozo | Scrum Master / Development Member |
+| Óscar OrtegaAnaela Pozo | Scrum Master / Development Member |
 | Estefanía Tenorio | Development Member |
-| Óscar Ortega | Development Member |
+| Anaela Pozo | Development Member |
 
-*(Nota: Pueden cambiar quién de ustedes 3 es el Scrum Master, lo dejé en Anaela como ejemplo).*
 
 ## Backlog del Producto
-Accede al tablero ágil donde organizamos nuestras User Stories:
-[ENLACE AL TABLERO DE TRELLO O JIRA AQUÍ]
-
-## Cómo Ejecutar el Proyecto
-1. Clona el repositorio:
-   `git clone [URL_DE_TU_REPOSITORIO_AQUI.git]`
-2. Abre el proyecto en Visual Studio.
+Accede al tablero ágil donde organizamos nuestras User Stories:  https://anaelapozo192.atlassian.net/jira/for-you?tab=workedon
 
 ## Estructura del Proyecto
 - `/BarAPI` → Backend
@@ -55,8 +48,3 @@ Accede al tablero ágil donde organizamos nuestras User Stories:
 | 2 | Diseño general del sistema | En progreso |
 | 3 | Registro y gestión de productos | En progreso |
 | 4 | Módulo de pedidos | En progreso |
-
-## Notas Adicionales
-- Este proyecto es con fines académicos.
-- El desarrollo es incremental y está alineado con prácticas ágiles.
-- Para reportar errores o mejoras, usa la sección Issues.
