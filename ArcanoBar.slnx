@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BarAPI/BarAPI.csproj" />
+  <Project Path="BarCliente/BarCliente.csproj" />
+</Solution>
