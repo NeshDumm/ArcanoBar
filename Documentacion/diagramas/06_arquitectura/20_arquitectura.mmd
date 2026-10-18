@@ -1,0 +1,36 @@
+flowchart TD
+  subgraph Clientes["Aplicaciones web"]
+    direction TB
+    Portal["BarCliente: reservas y administración remota"]
+    LocalUI["BarCliente: tablet, mesero, karaoke y caja"]
+  end
+  subgraph Backend["BarAPI: ASP.NET Core Web API"]
+    direction TB
+    Entrada["Controllers, DTO y validación"]
+    Seguridad["Autenticación JWT y autorización por rol o sesión"]
+    Servicios["Servicios: reservas, pedidos, inventario, karaoke y caja"]
+    Dominio["Reglas: aforo, anticipo, precios, saldo e idempotencia"]
+    Datos["EF Core y BarDbContext"]
+    Adaptadores["Adaptadores de pago y eventos de dispositivos"]
+    Entrada --> Seguridad
+    Seguridad --> Servicios
+    Servicios --> Dominio
+    Servicios --> Datos
+    Servicios --> Adaptadores
+  end
+  subgraph Persistencia["Datos centrales"]
+    SQL[("SQL Server")]
+  end
+  subgraph IntegracionLocal["Red del bar"]
+    direction TB
+    Gateway["Gateway local: autenticación, cola y reintentos"]
+    Hardware["Surtidores y lectores RFID o simulador"]
+    Hardware <-->|Protocolo del dispositivo| Gateway
+  end
+  Pasarela["Pasarela externa: sandbox o proveedor real"]
+  Portal -->|HTTPS REST| Entrada
+  LocalUI -->|HTTPS REST| Entrada
+  Datos --> SQL
+  Adaptadores -->|HTTPS| Pasarela
+  Pasarela -->|Webhook verificado| Entrada
+  Gateway <-->|HTTPS: autorización y eventos| Entrada

@@ -1,0 +1,92 @@
+erDiagram
+  USUARIO ||--o{ USUARIO_ROL : tiene
+  ROL ||--o{ USUARIO_ROL : concede
+  USUARIO o|--o{ AUDITORIA : realiza
+  SALA ||--o{ BLOQUE_SALA : ofrece
+  BLOQUE_SALA ||--o{ RESERVA : recibe
+  RESERVA ||--o| SESION : origina
+  SESION ||--|| CUENTA : abre
+  SESION ||--o{ ASIGNACION_RFID : habilita
+  TARJETA_RFID ||--o{ ASIGNACION_RFID : historial
+  SESION ||--o{ ACCESO_MESA : permite
+  USUARIO {
+    int UsuarioId PK
+    string Nombre
+    string Email UK
+    string PasswordHash
+    bool Activo
+  }
+  ROL {
+    int RolId PK
+    string Nombre UK
+  }
+  USUARIO_ROL {
+    int UsuarioId PK,FK
+    int RolId PK,FK
+  }
+  AUDITORIA {
+    bigint AuditoriaId PK
+    int UsuarioId FK "nullable para sistema"
+    string ActorTipo
+    string Accion
+    string EntidadReferencia
+    datetime FechaUTC
+    string Motivo
+  }
+  SALA {
+    int SalaId PK
+    string Nombre
+    int Capacidad
+    bool Activa
+  }
+  BLOQUE_SALA {
+    int BloqueSalaId PK
+    int SalaId FK
+    datetime InicioUTC
+    datetime FinUTC
+    bool Habilitado
+  }
+  RESERVA {
+    int ReservaId PK
+    int BloqueSalaId FK
+    string Contacto
+    string TokenConsultaHash
+    int Personas
+    decimal TarifaPersona
+    decimal TotalBase
+    decimal AnticipoRequerido
+    string Estado
+    datetime VenceUTC
+  }
+  SESION {
+    int SesionId PK
+    int ReservaId FK,UK
+    datetime AperturaUTC
+    datetime CierreUTC
+    string Estado
+  }
+  CUENTA {
+    int CuentaId PK
+    int SesionId FK,UK
+    string Estado
+    binary Version
+  }
+  TARJETA_RFID {
+    int TarjetaId PK
+    string UID UK
+    string Estado
+  }
+  ASIGNACION_RFID {
+    int AsignacionId PK
+    int TarjetaId FK
+    int SesionId FK
+    datetime DesdeUTC
+    datetime HastaUTC
+  }
+  ACCESO_MESA {
+    int AccesoMesaId PK
+    int SesionId FK
+    string TokenHash UK
+    datetime VenceUTC
+    bool Revocado
+  }

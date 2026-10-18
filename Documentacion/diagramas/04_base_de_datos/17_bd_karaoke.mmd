@@ -1,0 +1,58 @@
+erDiagram
+  ARTISTA ||--o{ ALBUM : publica
+  ALBUM o|--o{ CANCION : agrupa
+  ARTISTA ||--o{ CANCION_ARTISTA : participa
+  CANCION ||--o{ CANCION_ARTISTA : interpreta
+  GENERO ||--o{ CANCION : clasifica
+  SESION ||--o{ ACCESO_PREMIUM : adquiere
+  CANCION o|--o{ ACCESO_PREMIUM : habilita_cancion
+  ALBUM o|--o{ ACCESO_PREMIUM : habilita_album
+  ACCESO_PREMIUM o|--o| CARGO_CUENTA : genera
+  SESION ||--o{ SOLICITUD_KARAOKE : solicita
+  CANCION ||--o{ SOLICITUD_KARAOKE : aparece
+  ACCESO_PREMIUM o|--o{ SOLICITUD_KARAOKE : autoriza
+  ARTISTA {
+    int ArtistaId PK
+    string Nombre
+  }
+  ALBUM {
+    int AlbumId PK
+    int ArtistaId FK
+    string Titulo
+    string PortadaUrl
+    decimal PrecioPremium
+  }
+  GENERO {
+    int GeneroId PK
+    string Nombre
+  }
+  CANCION {
+    int CancionId PK
+    int AlbumId FK "nullable"
+    int GeneroId FK
+    string Titulo
+    bool EsPremium
+    decimal PrecioPremium
+    bool Activa
+  }
+  CANCION_ARTISTA {
+    int CancionId PK,FK
+    int ArtistaId PK,FK
+  }
+  ACCESO_PREMIUM {
+    int AccesoPremiumId PK
+    int SesionId FK
+    int CancionId FK "nullable"
+    int AlbumId FK "nullable"
+    decimal PrecioAplicado
+    string ClaveIdempotente UK
+  }
+  SOLICITUD_KARAOKE {
+    int SolicitudId PK
+    int SesionId FK
+    int CancionId FK
+    int AccesoPremiumId FK "nullable si gratuita"
+    int Orden
+    string Estado
+    string ClaveIdempotente UK
+  }

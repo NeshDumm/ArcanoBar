@@ -1,0 +1,37 @@
+sequenceDiagram
+  actor C as Cajero
+  participant UI as Blazor caja
+  participant API as BarAPI
+  participant DB as SQL Server
+  participant P as Terminal o proveedor
+  C->>UI: Solicitar liquidación
+  UI->>API: Iniciar liquidación de cuenta
+  API->>DB: Bloquear cuenta y pasar a EN_LIQUIDACION
+  API->>DB: Impedir nuevas autorizaciones y revisar eventos pendientes
+  alt Existen eventos o autorizaciones sin resolver
+    API-->>UI: Esperar conciliación, no cerrar
+  else Cuenta conciliada
+    API->>DB: Sumar cargos vigentes menos pagos aplicados
+    API-->>UI: Desglose y saldo pendiente
+    C->>UI: Seleccionar efectivo o tarjeta
+    alt Tarjeta y saldo positivo
+      UI->>API: Iniciar pago idempotente
+      API->>P: Procesar pago con referencia única
+      P-->>API: Resultado verificable
+      API->>DB: Registrar pago aprobado o rechazo
+    else Efectivo y saldo positivo
+      UI->>API: Confirmar cobro con permiso de cajero
+      API->>DB: Registrar pago una sola vez
+    else Saldo ya liquidado
+      API->>DB: Conservar pagos existentes
+    end
+    UI->>API: Solicitar cierre idempotente
+    API->>DB: Transacción: verificar saldo cero y ausencia de pendientes
+    alt Condiciones de cierre incumplidas
+      API-->>UI: Mantener en liquidación
+    else Cierre válido
+      API->>DB: Cerrar cuenta y sesión, desactivar RFID y QR
+      API->>DB: Guardar comprobante inmutable y auditoría
+      API-->>UI: Comprobante desglosado disponible
+    end
+  end

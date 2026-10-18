@@ -1,0 +1,49 @@
+@startuml
+ top to bottom direction
+ actor Cliente
+ actor Mesero
+ actor Cajero
+ actor "Encargado de Karaoke" as Karaoke
+ actor "Surtidor RFID" as Surtidor
+ rectangle "ArcanosBar: operación del local" {
+   usecase "CU-12 Pedir comida" as CU12
+   usecase "CU-13 Atender pedidos" as CU13
+   usecase "CU-15 Autorizar y registrar dispensación" as CU15
+   usecase "Validar tarjeta y existencias" as Validar
+   usecase "Registrar onzas y cargo" as Onzas
+   usecase "Actualizar inventario" as Stock
+   usecase "CU-16 Buscar o solicitar canción" as CU16
+   usecase "CU-17 Adquirir premium" as CU17
+   usecase "CU-18 Gestionar cola" as CU18
+   usecase "CU-19 Consultar cuenta" as CU19
+   usecase "CU-20 Cobrar y cerrar cuenta" as CU20
+   usecase "Conciliar eventos y validar saldo" as Conciliar
+   usecase "Desactivar QR y RFID" as Desactivar
+   usecase "CU-21 Emitir comprobante" as CU21
+ }
+ Cliente -- CU12
+ Mesero -- CU12
+ Mesero -- CU13
+ Cliente -- CU15
+ Surtidor -- CU15
+ Cliente -- CU16
+ Cliente -- CU17
+ Karaoke -- CU18
+ Cliente -- CU19
+ Cajero -- CU19
+ Cajero -- CU20
+ Cliente -- CU21
+ Cajero -- CU21
+ CU15 ..> Validar : <<include>>
+ CU15 ..> Onzas : <<include>>
+ CU15 ..> Stock : <<include>>
+ CU17 ..> CU16 : <<extend>>
+ note right of CU17
+   Extensión: solicitar contenido premium
+   sin acceso adquirido para la sesión.
+   La búsqueda gratuita no genera compra.
+ end note
+ CU20 ..> Conciliar : <<include>>
+ CU20 ..> Desactivar : <<include>>
+ CU20 ..> CU21 : <<include>>
+@enduml

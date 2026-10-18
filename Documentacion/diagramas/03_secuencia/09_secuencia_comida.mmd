@@ -1,0 +1,26 @@
+sequenceDiagram
+  actor C as Cliente
+  participant UI as Blazor tablet
+  participant API as BarAPI
+  participant DB as SQL Server
+  actor M as Mesero
+  C->>UI: Seleccionar platos, cantidades y observaciones
+  UI->>API: Crear pedido con token de mesa y clave idempotente
+  API->>DB: Validar sesión abierta y productos disponibles
+  alt Solicitud ya procesada
+    DB-->>API: Pedido previo
+    API-->>UI: Confirmación existente
+  else Validación incorrecta
+    API-->>UI: Mostrar agotados o sesión no disponible
+  else Pedido nuevo válido
+    API->>API: Calcular precios vigentes en servidor
+    API->>DB: Transacción: pedido, detalles y cargos únicos
+    API-->>UI: Pedido pendiente y total
+    M->>API: Consultar bandeja con credenciales del personal
+    API->>DB: Obtener pedidos autorizados
+    API-->>M: Pedidos por sala y estado
+    M->>API: Cambiar a preparación y después entregado
+    API->>DB: Validar transición y guardar estado
+    UI->>API: Consultar estado
+    API-->>UI: Estado actualizado
+  end

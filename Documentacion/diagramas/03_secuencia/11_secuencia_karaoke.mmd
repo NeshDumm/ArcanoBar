@@ -1,0 +1,26 @@
+sequenceDiagram
+  actor C as Cliente
+  participant UI as Blazor tablet
+  participant API as BarAPI
+  participant DB as SQL Server
+  actor K as Encargado de Karaoke
+  C->>UI: Buscar canción por artista, género o álbum
+  UI->>API: Consultar catálogo
+  API->>DB: Buscar contenido activo
+  API-->>UI: Canciones, portadas y condición de acceso
+  C->>UI: Solicitar canción
+  UI->>API: Consultar precio y acceso vigente
+  API->>DB: Validar sesión y acceso premium
+  alt Canción premium sin acceso
+    API-->>UI: Solicitar confirmación de precio
+    C->>UI: Confirmar compra
+    UI->>API: Comprar con clave idempotente
+    API->>DB: Transacción: cargo único y acceso adquirido
+  else Gratuita o acceso vigente
+    API-->>UI: No generar nuevo cargo
+  end
+  UI->>API: Crear solicitud de karaoke idempotente
+  API->>DB: Verificar acceso y añadir a cola de la sesión
+  API-->>UI: Posición y estado
+  K->>API: Iniciar y finalizar solicitud con permiso
+  API->>DB: Guardar transición de la cola

@@ -1,0 +1,22 @@
+flowchart TD
+  subgraph EP08["EP-08: Caja, pagos y cierre"]
+    direction TB
+    HU22["[HU-22] Consultar cuenta consolidada"]
+    HU23["[HU-23] Cobrar saldo y cerrar sesión"]
+    HU24["[HU-24] Emitir comprobante desglosado"]
+    HU25["[HU-25] Ajustes y devoluciones autorizados"]
+    HU22 ~~~ HU23 ~~~ HU24 ~~~ HU25
+  end
+  subgraph EP09["EP-09: Reportes y promociones"]
+    direction TB
+    HU26["[HU-26] Consultar indicadores"]
+    HU27["[HU-27] Exportar reportes"]
+    HU28["[HU-28] Configurar Happy Hour y descuentos premium"]
+    HU26 ~~~ HU27 ~~~ HU28
+  end
+  subgraph EP10["EP-10: Calidad e infraestructura híbrida"]
+    direction TB
+    HU29["[HU-29] Usar interfaces móviles y tablets"]
+    HU30["[HU-30] Operación y recuperación del sistema"]
+    HU29 ~~~ HU30
+  end

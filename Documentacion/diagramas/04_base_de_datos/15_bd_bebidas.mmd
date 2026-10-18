@@ -1,0 +1,50 @@
+erDiagram
+  PRODUCTO ||--o{ SURTIDOR : dispensa
+  SURTIDOR ||--o{ AUTORIZACION_SERVICIO : autoriza
+  ASIGNACION_RFID ||--o{ AUTORIZACION_SERVICIO : identifica
+  AUTORIZACION_SERVICIO ||--o{ RESERVA_INVENTARIO : retiene
+  INSUMO ||--o{ RESERVA_INVENTARIO : reserva
+  AUTORIZACION_SERVICIO ||--o{ EVENTO_CONSUMO : reporta
+  EVENTO_CONSUMO ||--o{ MOVIMIENTO_INVENTARIO : descuenta
+  EVENTO_CONSUMO o|--o| CARGO_CUENTA : genera
+  SURTIDOR {
+    int SurtidorId PK
+    int ProductoId FK
+    string Identificador UK
+    string CredencialReferencia
+    string Estado
+  }
+  AUTORIZACION_SERVICIO {
+    int AutorizacionId PK
+    int SurtidorId FK
+    int AsignacionId FK
+    decimal OnzasMaximas
+    decimal PrecioOnzaAplicado
+    datetime VenceUTC
+    string Estado
+  }
+  RESERVA_INVENTARIO {
+    int AutorizacionId PK,FK
+    int InsumoId PK,FK
+    decimal CantidadReservada
+    decimal CantidadConsumida
+    string Estado
+  }
+  EVENTO_CONSUMO {
+    bigint EventoId PK
+    string IdentificadorExterno UK
+    int AutorizacionId FK
+    decimal OnzasReales
+    datetime DispensadoUTC
+    datetime RecibidoUTC
+    string EstadoProcesamiento
+  }
+  CARGO_CUENTA {
+    bigint CargoId PK
+    int CuentaId FK
+    bigint EventoId FK,UK "nullable para otros conceptos"
+    decimal Cantidad
+    decimal PrecioUnitario
+    decimal Descuento
+    decimal ImporteFirmado
+  }
