@@ -1,7 +1,31 @@
 ﻿@page "/"
+@inject HttpClient Http
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Inicio - Sistema de Bar</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Sistema de Gestión del Bar</h1>
+<p>. Lista de combos disponibles:</p>
 
-Welcome to your new app.
+@if (combos == null)
+{
+    <p><em>Cargando combos desde la API...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var combo in combos)
+        {
+            <li>@combo</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<string>? combos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Llamamos al endpoint de combos que creamos en BarAPI
+        combos = await Http.GetFromJsonAsync<List<string>>("https://localhost:7103/api/combos");
+    }
+}
