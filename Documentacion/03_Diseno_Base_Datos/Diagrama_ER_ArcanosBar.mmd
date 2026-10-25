@@ -1,0 +1,133 @@
+erDiagram
+  ROL ||--o{ USUARIO : tiene
+  USUARIO ||--o{ PEDIDO : toma_mesero
+
+  ESPACIO ||--o{ RESERVA : recibe
+  ESPACIO ||--o{ SESION_ESPACIO : aloja
+  RESERVA |o--o| SESION_ESPACIO : origina
+
+  CATEGORIA ||--o{ PRODUCTO : clasifica
+  PRODUCTO ||--o{ PRODUCTO_DETALLE : contiene
+
+  SESION_ESPACIO ||--o{ PEDIDO : genera
+  PEDIDO ||--o{ PEDIDO_DETALLE : incluye
+  PRODUCTO ||--o{ PEDIDO_DETALLE : se_pide_en
+
+  SESION_ESPACIO ||--|| CUENTA : liquida
+  CUENTA ||--o{ PAGO : registra
+
+  ROL {
+    int RolId PK
+    string Nombre UK
+  }
+
+  USUARIO {
+    int UsuarioId PK
+    int RolId FK
+    string NombreCompleto
+    string Email UK
+    string PasswordHash
+    bool Activo
+    datetime FechaCreacion
+  }
+
+  ESPACIO {
+    int EspacioId PK
+    string Nombre UK
+    string TipoEspacio "Mesa | SalaKaraoke"
+    string Subtipo "Grande | Mediana | Estandar"
+    int CapacidadPersonas
+    decimal TarifaPorHora
+    string Estado "Disponible | Ocupado | Mantenimiento"
+  }
+
+  RESERVA {
+    int ReservaId PK
+    int EspacioId FK
+    string ClienteCedula
+    string ClienteNombre
+    string ClienteTelefono
+    datetime FechaHoraInicio
+    datetime FechaHoraFin
+    decimal MontoAnticipo "25% calculado"
+    string Estado "Pendiente | Confirmada | Cancelada | Finalizada"
+    string CodigoReserva UK
+    datetime FechaRegistro
+  }
+
+  CATEGORIA {
+    int CategoriaId PK
+    string Nombre UK
+    string Descripcion
+    bool Activa
+  }
+
+  PRODUCTO {
+    int ProductoId PK
+    int CategoriaId FK
+    string Nombre
+    string Descripcion
+    decimal Precio
+    bool EsCombo
+    bool Disponible
+    string ImagenUrl
+  }
+
+  PRODUCTO_DETALLE {
+    int ProductoDetalleId PK
+    int ProductoId FK
+    string NombreComponente "Articulo o ingrediente detallado"
+    string Descripcion "Detalles, acompañamientos o especificaciones"
+    int Cantidad
+    bool EsOpcional
+  }
+
+  SESION_ESPACIO {
+    int SesionEspacioId PK
+    int EspacioId FK
+    int ReservaId FK "nullable"
+    datetime FechaApertura
+    datetime FechaCierre "nullable"
+    string TokenQR UK "Token para vinculacion web por QR"
+    string Estado "Activa | Cerrada"
+  }
+
+  PEDIDO {
+    int PedidoId PK
+    int SesionEspacioId FK
+    int UsuarioId FK "nullable (asignado si lo tomo el mesero)"
+    datetime FechaHora
+    string Estado "Pendiente | EnPreparacion | Listo | Entregado | Cancelado"
+    string ObservacionGeneral "nullable"
+  }
+
+  PEDIDO_DETALLE {
+    int PedidoDetalleId PK
+    int PedidoId FK
+    int ProductoId FK
+    int Cantidad
+    decimal PrecioUnitario
+    decimal Subtotal
+    string NotasItem "nullable (ej. sin cebolla)"
+  }
+
+  CUENTA {
+    int CuentaId PK
+    int SesionEspacioId FK,UK
+    decimal SubtotalConsumo
+    decimal HorasKaraoke
+    decimal CostoKaraoke "Regla: 0 si SubtotalConsumo >= 50"
+    decimal AnticipoAcreditado "25% abonado en reserva previa"
+    decimal TotalAPagar "(SubtotalConsumo + CostoKaraoke) - Anticipo"
+    string Estado "Abierta | Pagada"
+    datetime FechaLiquidacion "nullable"
+  }
+
+  PAGO {
+    int PagoId PK
+    int CuentaId FK
+    string MetodoPago "Efectivo | DeUna | Tarjeta"
+    decimal MontoPagado
+    string ReferenciaComprobante "nullable"
+    datetime FechaPago
+  }
