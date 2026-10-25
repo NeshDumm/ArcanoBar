@@ -1,0 +1,41 @@
+@startuml Secuencia_US09_US10_US11_Pedidos
+autonumber
+actor Mesero
+actor Cliente
+actor "Cocinero / Barman" as Cocina
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Mesero -> API : POST /api/pedidos (sesión activa, pedido verbal)
+API -> DB : Insertar PEDIDO (Pendiente, UsuarioId = mesero)
+API --> Mesero : 201 Created
+
+Cocina -> API : GET /api/pedidos?estado=Pendiente
+API --> Cocina : Comandas en orden cronológico
+
+alt Preparar pedido
+  Cocina -> API : PUT /api/pedidos/{id}/estado = EnPreparacion
+  API -> DB : Actualizar estado
+  Cocina -> API : PUT /api/pedidos/{id}/estado = Listo
+  API -> DB : Actualizar estado
+else Cancelar antes de preparar
+  Cocina -> API : PUT /api/pedidos/{id}/cancelar (motivo)
+  API -> DB : Estado = Cancelado
+end
+
+Mesero -> API : PUT /api/pedidos/{id}/estado = Entregado
+API -> DB : Actualizar estado
+
+Cliente -> API : GET /api/pedidos?sesion={token}
+API --> Cliente : Pedidos con su estado actual
+
+opt Cliente cancela un ítem
+  Cliente -> API : PUT /api/pedidos/{id}/cancelar
+  alt Estado Pendiente
+    API -> DB : Estado = Cancelado
+    API --> Cliente : 200 OK
+  else Ya en preparación
+    API --> Cliente : 409 Conflict
+  end
+end
+@enduml

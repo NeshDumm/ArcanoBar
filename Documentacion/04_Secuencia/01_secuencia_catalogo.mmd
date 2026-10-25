@@ -1,0 +1,19 @@
+@startuml Secuencia_US01_Catalogo
+autonumber
+actor Cliente
+participant "BarCliente\n(Blazor WASM)" as UI
+participant "BarAPI\n(CombosController)" as API
+database "SQL Server\n(EF Core)" as DB
+
+Cliente -> UI : Abre pantalla de inicio (Home.razor)
+UI -> API : GET /api/combos (HttpClient)
+note right: CORS PermitirBlazor valida el origen
+API -> DB : Consultar PRODUCTO donde EsCombo = true
+DB --> API : Lista de combos y categorías
+API --> UI : 200 OK (JSON)
+alt Respuesta correcta
+  UI --> Cliente : Lista de combos con precio y Disponible/Agotado
+else Error de conexión o CORS
+  UI --> Cliente : Mensaje de error claro
+end
+@enduml

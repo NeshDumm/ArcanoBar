@@ -1,0 +1,89 @@
+@startuml CasosDeUso_ArcanosBar
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Cliente" as Cliente
+actor "Administrador" as Admin
+actor "Cajero" as Cajero
+actor "Mesero" as Mesero
+actor "Cocinero / Barman" as Cocina
+
+rectangle "Sistema ArcanosBar" {
+
+  package "EP-01 Catálogo y Combos" {
+    usecase "US-01 Consultar catálogo y combos" as UC01
+    usecase "US-02 Administrar productos y combos" as UC02
+    usecase "Marcar producto como Agotado" as UC02a
+  }
+
+  package "EP-02 Espacios y Reservas" {
+    usecase "US-06 Configurar salas y mesas" as UC06
+    usecase "US-03 Consultar disponibilidad" as UC03
+    usecase "US-04 Registrar reserva con anticipo 25%" as UC04
+    usecase "US-05 Confirmar y administrar reservas" as UC05
+    usecase "Registrar reserva telefónica o presencial" as UC05a
+    usecase "Cancelar reserva" as UC05b
+  }
+
+  package "EP-03 Pedidos en Mesa/Sala" {
+    usecase "US-07 Vincular mesa/sala por QR" as UC07
+    usecase "US-08 Enviar pedidos desde la app" as UC08
+    usecase "US-09 Tomar pedido presencial" as UC09
+    usecase "US-10 Gestionar pedidos en cocina/barra" as UC10
+    usecase "US-11 Seguir estado de pedidos" as UC11
+    usecase "Cancelar ítem Pendiente" as UC11a
+  }
+
+  package "EP-04 Cuentas y Cobros" {
+    usecase "US-12 Consultar precuenta" as UC12
+    usecase "Aplicar regla karaoke gratis desde $50" as UC12a
+    usecase "Descontar anticipo 25%" as UC12b
+    usecase "US-13 Cobrar y registrar método de pago" as UC13
+    usecase "US-14 Emitir comprobante y liberar espacio" as UC14
+  }
+
+  package "EP-05 Seguridad y Roles" {
+    usecase "US-15 Iniciar sesión" as UC15
+    usecase "US-16 Control de accesos por rol" as UC16
+  }
+}
+
+Cliente --> UC01
+Cliente --> UC03
+Cliente --> UC04
+Cliente --> UC07
+Cliente --> UC08
+Cliente --> UC11
+Cliente --> UC12
+
+Admin --> UC02
+Admin --> UC06
+Admin --> UC05
+Admin --> UC15
+
+Cajero --> UC03
+Cajero --> UC05
+Cajero --> UC12
+Cajero --> UC13
+Cajero --> UC14
+Cajero --> UC15
+
+Mesero --> UC09
+Mesero --> UC11
+Mesero --> UC15
+
+Cocina --> UC10
+Cocina --> UC15
+
+UC02 ..> UC02a : <<include>>
+UC05 ..> UC05a : <<include>>
+UC05b ..> UC05 : <<extend>>
+UC11a ..> UC11 : <<extend>>
+UC12 ..> UC12a : <<include>>
+UC12 ..> UC12b : <<include>>
+UC13 ..> UC12 : <<include>>
+UC14 ..> UC13 : <<include>>
+UC08 ..> UC07 : <<include>>
+UC09 ..> UC07 : <<include>>
+UC15 ..> UC16 : <<include>>
+@enduml

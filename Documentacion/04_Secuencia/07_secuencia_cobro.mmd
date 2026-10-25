@@ -1,0 +1,40 @@
+@startuml Secuencia_US12_US13_US14_Cuenta_Cobro
+autonumber
+actor Cajero
+actor Cliente
+participant "Panel de Caja\n(Blazor)" as UI
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Cliente -> UI : Solicita ver su precuenta
+UI -> API : GET /api/cuentas/{sesionId}/precuenta
+API -> DB : Sumar PEDIDO_DETALLE (excluye cancelados)
+DB --> API : SubtotalConsumo
+alt Sala de karaoke
+  alt SubtotalConsumo >= 50
+    API -> API : CostoKaraoke = 0
+  else SubtotalConsumo < 50
+    API -> API : CostoKaraoke = Horas x TarifaPorHora
+  end
+else Mesa de comedor
+  API -> API : CostoKaraoke = 0
+end
+API -> DB : Leer anticipo acreditado de la RESERVA
+API -> API : TotalAPagar = (Subtotal + CostoKaraoke) - Anticipo
+API --> UI : Desglose y total a pagar
+UI --> Cliente : Precuenta detallada
+
+Cajero -> UI : Registra pago (Efectivo, DeUna o Tarjeta)
+UI -> API : POST /api/cuentas/{id}/pagos
+API -> DB : Insertar PAGO (método, monto, referencia)
+API -> DB : CUENTA.Estado = Pagada
+API --> UI : 200 OK
+
+Cajero -> UI : Emite comprobante y cierra sesión
+UI -> API : POST /api/sesiones/{id}/cerrar
+API -> DB : SESION_ESPACIO.Estado = Cerrada (invalida TokenQR)
+API -> DB : ESPACIO.Estado = Disponible
+API --> UI : Comprobante (PDF)
+UI --> Cajero : Descarga o impresión
+UI --> Cliente : Comprobante de consumo
+@enduml

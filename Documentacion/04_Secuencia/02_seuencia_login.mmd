@@ -1,0 +1,24 @@
+@startuml Secuencia_US15_US16_Login_Roles
+autonumber
+actor Empleado
+participant "BarCliente\n(Blazor)" as UI
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Empleado -> UI : Ingresa correo y contraseña
+UI -> API : POST /api/auth/login
+API -> DB : Buscar USUARIO por Email y Activo = true
+DB --> API : Usuario con PasswordHash y Rol
+API -> API : Verificar hash de contraseña
+alt Credenciales válidas
+  API --> UI : 200 OK (token con claims de rol)
+  UI --> Empleado : Muestra solo el menú de su rol
+else Credenciales inválidas
+  API --> UI : 401 Unauthorized
+  UI --> Empleado : Error genérico sin revelar datos
+end
+Empleado -> UI : Intenta abrir módulo ajeno a su rol
+UI -> API : Solicitud con token
+API --> UI : 403 Forbidden
+UI --> Empleado : Acceso denegado
+@enduml

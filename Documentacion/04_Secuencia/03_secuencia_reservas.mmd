@@ -1,0 +1,29 @@
+@startuml Secuencia_US03_US04_Reserva
+autonumber
+actor Cliente
+participant "App Web\n(Blazor)" as UI
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Cliente -> UI : Elige fecha, hora y tipo de espacio
+UI -> API : GET /api/espacios/disponibilidad
+API -> DB : Buscar ESPACIO sin RESERVA confirmada solapada
+DB --> API : Espacios libres
+API --> UI : Lista de espacios disponibles
+UI --> Cliente : Calendario con horarios libres
+
+Cliente -> UI : Selecciona espacio e ingresa Cédula, Nombre, Teléfono
+UI -> API : POST /api/reservas
+API -> API : Validar datos obligatorios
+API -> DB : Revalidar disponibilidad (transacción)
+alt Espacio aún disponible
+  API -> API : MontoAnticipo = 25% de (tarifa x horas)
+  API -> DB : Insertar RESERVA (Pendiente) con CodigoReserva
+  DB --> API : ReservaId
+  API --> UI : 201 Created (código y anticipo)
+  UI --> Cliente : Resumen de reserva y valor del anticipo
+else Espacio ocupado
+  API --> UI : 409 Conflict
+  UI --> Cliente : Solicita elegir otro horario
+end
+@enduml

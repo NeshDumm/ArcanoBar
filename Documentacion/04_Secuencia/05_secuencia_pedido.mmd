@@ -1,0 +1,26 @@
+@startuml Secuencia_US07_US08_QR_Pedido
+autonumber
+actor Cliente
+participant "App Web\n(Blazor)" as UI
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Cliente -> UI : Escanea QR de la mesa o sala
+UI -> API : GET /api/sesiones/{tokenQR}
+API -> DB : Buscar SESION_ESPACIO Activa por TokenQR
+alt Sesión activa
+  DB --> API : Sesión y espacio
+  API --> UI : 200 OK
+  UI --> Cliente : Menú digital vinculado al espacio
+  Cliente -> UI : Agrega productos y combos con notas
+  UI -> API : POST /api/pedidos (sesión, ítems, notas)
+  API -> DB : Leer precio vigente de PRODUCTO (disponible)
+  API -> DB : Insertar PEDIDO (Pendiente) y PEDIDO_DETALLE
+  DB --> API : PedidoId
+  API --> UI : 201 Created
+  UI --> Cliente : Confirmación y total del pedido
+else Sin sesión abierta o token expirado
+  API --> UI : 404 / 410
+  UI --> Cliente : Pide habilitación al mesero o cajero
+end
+@enduml

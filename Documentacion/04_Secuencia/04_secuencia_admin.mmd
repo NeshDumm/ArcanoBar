@@ -1,0 +1,31 @@
+@startuml Secuencia_US05_Admin_Reservas
+autonumber
+actor Cajero
+participant "Panel de Caja\n(Blazor)" as UI
+participant "BarAPI" as API
+database "SQL Server" as DB
+
+Cajero -> UI : Abre lista de reservas
+UI -> API : GET /api/reservas
+API -> DB : Consultar RESERVA
+DB --> API : Reservas
+API --> UI : Lista de reservas
+
+alt Validar anticipo
+  Cajero -> UI : Valida pago del 25% y confirma
+  UI -> API : PUT /api/reservas/{id}/confirmar
+  API -> DB : Estado = Confirmada
+  API --> UI : 200 OK
+else Reserva telefónica o presencial
+  Cajero -> UI : Registra datos del cliente y espacio
+  UI -> API : POST /api/reservas
+  API -> DB : Insertar RESERVA
+  API --> UI : 201 Created
+else Cancelación o inasistencia
+  Cajero -> UI : Cancela la reserva
+  UI -> API : PUT /api/reservas/{id}/cancelar
+  API -> DB : Estado = Cancelada (libera espacio)
+  API --> UI : 200 OK
+end
+UI --> Cajero : Lista actualizada
+@enduml
